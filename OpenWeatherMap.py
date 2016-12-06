@@ -6,16 +6,23 @@ import time
 import pyowm
 
 print('OpenWeatherStreetMap')
-owm = pyowm.OWM('064d738c6654705a34f871442c36f814')
+owm = pyowm.OWM('064d738c6654705a34f871442c36f814', language='ru')
 observation = owm.weather_at_place('Rostov-on-Don,ru')
 weather = observation.get_weather()
 location = observation.get_location()
+
+# pog = pyowm.webapi25.forecast.Forecast('3h', 1480962594, 'Rostov-on-Don, ru', 'Rostov-on-Don, ru')
+
+pog = owm.daily_forecast_at_coords(47.1426, 39.4238)
+tomorrow = owm.daily_forecast('Rostov-on-Don,ru').get_weather_at(observation.get_reception_time() + 86400)
+
 
 """""
 print(owm)
 print(observation)
 print(weather)
 print(location)
+
 
 
 print('Country : ' + location.get_country())
@@ -35,21 +42,20 @@ print('Temperature: ' + str(weather.get_temperature('celsius')))
 print('Visibility distance: ' + str(weather.get_visibility_distance()))
 print('Image: ' + str(weather.get_weather_icon_name()))
 """
-print('Wind: ' + str(weather.get_wind()))
 
 
 def whatiscloudness():
     if 0 <= weather.get_clouds() <= 10:
-        return 'clear'
+        return 'ясно'
 
     if 10 < weather.get_clouds() <= 30:
-        return 'mostly clear'
+        return 'переменная облачность'
 
     if 30 < weather.get_clouds() <= 70:
-        return 'mostly clouds'
+        return 'преимущественно облачно'
 
     if 70 < weather.get_clouds() <= 100:
-        return 'clouds'
+        return 'облачно'
 
 
 def what_now_time():
@@ -60,21 +66,21 @@ def what_now_time():
 def whatiswind():
     try:
         if 355 <= weather.get_wind()['deg'] <= 5:
-            return 'north'
+            return 'северный'
         if 5 < weather.get_wind()['deg'] <= 85:
-            return 'north west'
+            return 'северо-восточный'
         if 85 < weather.get_wind()['deg'] <= 95:
-            return 'west'
+            return 'восточный'
         if 95 < weather.get_wind()['deg'] <= 175:
-            return 'south west'
+            return 'юго-восточный'
         if 175 < weather.get_wind()['deg'] <= 185:
-            return 'south'
+            return 'южный'
         if 185 < weather.get_wind()['deg'] <= 265:
-            return 'south east'
+            return 'юго-западный'
         if 265 < weather.get_wind()['deg'] <= 275:
-            return 'east'
+            return 'западный'
         if 275 < weather.get_wind()['deg'] < 355:
-            return 'horth east'
+            return 'северо-западный'
     except:
         pass
 
@@ -82,13 +88,14 @@ def whatiswind():
 """Погода в городе Москва (Россия) на сегодня в 10:15 солнечная, облачность
 составляет 5%, давление 760 мм рт. ст., температура 20 градусов Цельсия, ночью 8
 днем 25 градусов Цельсия, ветер северо-западный, 5 м/с.
-
-print('Weather in the ' + location.get_name() + '(' + location.get_country() + ')' +
-      ' city, today at  ' + what_now_time() + str(whatiscloudness()) +
-      ', oblachnost  ' + str(weather.get_clouds()) + '%, ' +
-      'pressure' + str(weather.get_pressure()['press']) +
-      ' mm. hg. st.  temperature ' + str(weather.get_temperature('celsius')['temp']) +
-      'by celsius, wind ' + str(whatiswind()) + str(weather.get_wind()['speed']) + ' m/s')
 """
-
-print(whatiswind())
+print('Погода в городе ' + location.get_name() + '(' + location.get_country() + ')' +
+      ' на сегодня, в ' + what_now_time() + str(whatiscloudness()) + " " +
+      ', облачность ' + str(weather.get_clouds()) + '%, ' +
+      ' давление ' + str(weather.get_pressure()['press']) +
+      ' мм.рт.ст, температура ' + str(weather.get_temperature('celsius')['temp']) +
+      ' градусов Цельсия, ветер ' + str(whatiswind()) + ', ' + str(
+    weather.get_wind()['speed']) + ' m/s' + '. Завтра утром ' + str(
+    tomorrow.get_temperature('celsius')['morn']) + ', днем ' + str(
+    tomorrow.get_temperature('celsius')['day']) + ', вечером ' + str(
+    tomorrow.get_temperature('celsius')['eve']) + ', ночью ' + str(tomorrow.get_temperature('celsius')['night']))
